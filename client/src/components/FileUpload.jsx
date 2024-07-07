@@ -114,8 +114,8 @@ const FileUpload = () => {
           alignItems: "center",
         }}
       >
-        <Typography component="h1" variant="h5">
-          Upload Video
+        <Typography component="h1" style={{color:"#32CD32"}} variant="h5">
+          UPLOAD VIDEO IN CHUNKS
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <TextField
