@@ -8,9 +8,27 @@ TheArtfulProgrammer
 
 ## Project Structure
 
-project-root/
-├── client/         # React + Vite frontend
-└── server/         # Node.js + Express backend
+### Client (React + Vite)
+
+- `public/`: Contains static assets that are publicly accessible.
+- `src/`: Main source directory for the React application.
+  - `components/`: Reusable React components, including the video upload form.
+  - `App.css/`: CSS or styled-component files for styling the application.
+  - `App.jsx`: The main React component that orchestrates the application.
+  - `main.jsx`: Entry point for the React application.
+- `index.html`: HTML template for the React app.
+- `package.json`: Defines frontend dependencies and scripts.
+- `vite.config.js`: Configuration file for Vite.
+
+### Server (Node.js + Express)
+
+- `controllers/`: Contains logic for handling API requests, including video chunk processing.
+- `routes/`: Defines API routes for the application.
+- `middleware/`: Custom middleware, including Multer configuration for handling file uploads.
+- `models/`: Data models (if using a database to store video metadata).
+- `uploads/`: Temporary directory for storing uploaded video chunks (Note: in this implementation, chunks are processed in memory).
+- `package.json`: Defines backend dependencies and scripts.
+- `index.js`: Entry point for the Express server, starts the application.
 
 ## Features
 
