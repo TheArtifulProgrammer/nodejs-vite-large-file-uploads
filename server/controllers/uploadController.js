@@ -1,11 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const { promisify } = require("util");
-
-const writeFileAsync = promisify(fs.writeFile);
 const appendFileAsync = promisify(fs.appendFile);
 const unlinkAsync = promisify(fs.unlink);
-const renameAsync = promisify(fs.rename);
 const readFileAsync = promisify(fs.readFile);
 
 const uploadController = {
@@ -22,19 +19,18 @@ const uploadController = {
       if (!fs.existsSync(uploadsDir)) {
         fs.mkdirSync(uploadsDir, { recursive: true });
       }
-
+      // Start uploading data chunks
       const chunkFile = req.file;
       const tempFilePath = path.join(tempDir, `${originalname}.part`);
 
       // Append the chunk to the temporary file
       await appendFileAsync(tempFilePath, chunkFile.buffer);
-
       console.log(
         `Chunk ${chunkNumber} of ${totalChunks} received for ${originalname}`
       );
 
       if (parseInt(chunkNumber) === parseInt(totalChunks) - 1) {
-        // This is the last chunk, move the file to the uploads directory
+        // This is the last chunk, process the complete file
         let finalFilePath = path.join(uploadsDir, originalname);
         let fileNameWithoutExt = path.parse(originalname).name;
         let fileExt = path.parse(originalname).ext;
@@ -49,7 +45,14 @@ const uploadController = {
           counter++;
         }
 
-        await renameAsync(tempFilePath, finalFilePath);
+        // Read the entire temporary file
+        const fileContent = await readFileAsync(tempFilePath);
+
+        // Write the content to the final file
+        await fs.promises.writeFile(finalFilePath, fileContent);
+
+        // Delete the temporary file
+        await unlinkAsync(tempFilePath);
 
         // Check MIME type
         const fileBuffer = await readFileAsync(finalFilePath);
