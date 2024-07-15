@@ -71,22 +71,35 @@ const FileUpload = () => {
           }
 
           console.log({ data });
-          const temp = `Chunk ${
-            chunkNumber + 1
-          }/${totalChunks} uploaded successfully`;
+          // NB : We are subtracting 1 from the progressInPercentage to account errors in the progress bar, ping me for explaination
+          const progressInPercentage = Math.max(
+            0,
+            Math.round(Number((chunkNumber + 1) * chunkProgress)) - 1
+          );
+          const temp =
+            progressInPercentage > 80
+              ? `Uploading and validating file - ${progressInPercentage}% complete.`
+              : `Uploading file - ${progressInPercentage}% complete.`;
           setStatus(temp);
-          setProgress(Number((chunkNumber + 1) * chunkProgress));
+          setProgress(progressInPercentage);
           console.log(temp);
+
+          if (chunkNumber === totalChunks - 1) {
+            // This is the last chunk
+            // NB : We are subtracting 1 from the progressInPercentage to account errors in the progress bar, ping me for explaination
+            setProgress(99);
+            setStatus("File upload completed");
+            return data;
+          }
+
           chunkNumber++;
           start = end;
-          end = start + chunkSize;
-          await uploadNextChunk();
+          end = Math.min(start + chunkSize, selectedFile.size);
+          return await uploadNextChunk();
         } catch (error) {
-          console.error("Error uploading chunk:", error);
-          setError(
-            `Error uploading chunk ${chunkNumber + 1}: ${error.message}`
-          );
-          setStatus("Upload failed");
+          setError(`Error uploading : ${error.message}`);
+          setStatus("File uploading failed.");
+          setProgress(0);
           throw error; // Re-throw the error to stop the upload process
         }
       } else {
@@ -96,12 +109,16 @@ const FileUpload = () => {
       }
     };
 
-    try {
-      await uploadNextChunk();
-    } catch (error) {
-      console.error("Error in upload process:", error);
-      // Error message is already set in the catch block of uploadNextChunk
-    }
+      try {
+        const finalResponse = await uploadNextChunk();
+        console.log("Final upload response:", finalResponse);
+        if (finalResponse) {
+          console.log();(`Final response...........`);
+          setProgress(100);
+        }
+      } catch (error) {
+        setError(`Error uploading : ${error.message}`);
+      }
   };
 
   return (
