@@ -39,15 +39,15 @@ const FileUpload = () => {
       return;
     }
 
-    const chunkSize = 5 * 1024 * 1024; // 5MB (adjust based on your requirements)
+    const chunkSize = 2 * 1024 * 1024; // 2MB per chunk
     const totalChunks = Math.ceil(selectedFile.size / chunkSize);
     const chunkProgress = 100 / totalChunks;
     let chunkNumber = 0;
     let start = 0;
-    let end = 0;
+    let end = chunkSize;
 
     const uploadNextChunk = async () => {
-      if (end <= selectedFile.size) {
+      if (chunkNumber < totalChunks) {
         const chunk = selectedFile.slice(start, end);
         const formData = new FormData();
         formData.append("video", chunk);
@@ -113,7 +113,7 @@ const FileUpload = () => {
         const finalResponse = await uploadNextChunk();
         console.log("Final upload response:", finalResponse);
         if (finalResponse) {
-          console.log();(`Final response...........`);
+          setStatus(finalResponse.msg);
           setProgress(100);
         }
       } catch (error) {
