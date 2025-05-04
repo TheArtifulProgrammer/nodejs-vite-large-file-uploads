@@ -32,8 +32,8 @@ TheArtfulProgrammer
 
 ## Features
 
-- Upload large video files in chunks
-- Improved upload speed
+- Upload large video files in chunks.
+- Improved upload speed.
 - In-memory chunk processing (instead of writing to disk)
 - Uses Multer middleware for handling file uploads
 
